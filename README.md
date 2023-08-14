@@ -7,9 +7,7 @@
 
 # Timeseries for Everyone
 
-### Code and slides to accompany the online series of webinars: https://data4sci.com/timeseries by Data For Science.
-
-### Run the code in Binder: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/DataForScience/Timeseries/master)
+### Run the code in Binder: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/DataForScience/Timeseries/master) (Update in Progress)
 
 The availability of large quantity of cheap sensors brought forth by the so called “Internet of Things” has resulted in an explosion of the amounts of time varying data. Understanding how to mine, process and analyze such data will only to become an ever more important skill in any data scientists toolkit. 
 
