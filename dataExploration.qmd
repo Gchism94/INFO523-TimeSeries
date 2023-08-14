@@ -1,0 +1,247 @@
+---
+title: "Data Exploration"
+author: "Greg Chism"
+format: 
+  html:
+    theme: flatly
+toc: true
+editor: visual
+---
+
+## Time Series Analysis I: Data Exploration
+
+This document provides R code for the Data Exploration section of lecture 11 from INFO 523 in Fall 2023. The python version of the code can be found
+
+## Install packages
+
+```{r}
+if (!require(pacman)) install.packages('pacman')
+
+p_load(colorblindr,
+       dlookr,
+       here,
+       janitor,
+       tidyverse,
+       timetk)
+
+theme_set(theme_minimal(base_size = 16))
+```
+
+## GDP Data
+
+The first timeseries will consider is the US Quarterly GDP for the past 70 years.
+
+```{r}
+GDP <- read_csv(here("data", "GDP.csv")) |>
+  mutate(DATE = as_date(DATE))
+```
+
+### Diagnose the dataset
+
+```{r}
+GDP |> diagnose()
+```
+
+### Glimpse the dataset
+
+```{r}
+GDP |> glimpse()
+```
+
+### Plot the GDP as a time series
+
+There is a clear upward trend:
+
+```{r}
+GDP |>
+  plot_time_series(.date_var = DATE,
+                   .value = GDP,
+                   .interactive = TRUE,
+                   .x_lab = "Date",
+                   .y_lab = "GDP ($B)",
+                   .smooth = FALSE,
+                   .line_color = "#378DBD")
+```
+
+## Influenza mortality
+
+Next, we look the percentage of deaths attributed to Influenza and Pneumonia in the past 8 years:
+
+```{r}
+ILI <- read_csv(here("data", "CDC.csv")) |>
+  clean_names() |>
+  mutate(date = year + week/52)
+
+```
+
+### Glimpse the data
+
+```{r}
+ILI |> glimpse()
+```
+
+### Plot Influenza mortality as a time series
+
+The seasonal behavior in unmistakable. The purple curve illustrates the expected seasonal behavior, while the green curve displays the threshold above which we are facing an epidemic:
+
+```{r}
+ILI |>
+  select(date, percent_of_deaths_due_to_pneumonia_and_influenza, expected, threshold) |>
+  pivot_longer(!date, names_to = "series", values_to = "values") |>
+  mutate(series = fct_relevel(series, "percent_of_deaths_due_to_pneumonia_and_influenza",
+                              "expected", "threshold")) |>
+  ggplot(aes(x = date, y = values, color = series)) +
+  geom_line(size = 1) + 
+  scale_color_manual(labels = c("% Mortality", "Expected", "Threshold"),
+                       values = c("#378DBD", "#E69F00", "#009E73")) +
+  labs(x = "Date", y = "% Mortality") +
+  theme(legend.position = "top")
+  
+
+```
+
+## Sun activity
+
+The number of observed sun spots over 300 years also display a nice seasonal behavior over the course of a decade or so:
+
+```{r}
+Sun <- read_csv(here("data", "sun.csv")) 
+```
+
+### Glimpse the data
+
+```{r}
+Sun |> glimpse()
+```
+
+```{r}
+Sun |>
+ggplot(aes(x = YEAR, y = SUNACTIVITY)) +
+  geom_line(size = 1, color = "#378DBD") +
+  labs(x = "Year", y = "Sun spot activity") 
+```
+
+## Dow-Jones Industrial Average
+
+The Dow-Jones Industrial Average also has a clear uptrend like GDP but with significantly larger fluctuations:
+
+```{r}
+DJIA <- read.csv(here("data", "DJIA.csv"), na.strings = ".") |>
+  mutate(DATE = as_date(DATE))
+```
+
+### Glimpse the data
+
+```{r}
+DJIA |> glimpse()
+```
+
+### Diagnose the data
+
+```{r}
+DJIA |> diagnose()
+```
+
+```{r, warning=FALSE}
+DJIA |>
+  filter(between(DATE, as.Date("2016-12-31"), as.Date("2019-01-01"))) |>
+  ggplot(aes(x = DATE, y = DJIA)) +
+  geom_line(size = 1, color = "#378DBD") +
+  labs(x = "Date", y = "DIJA") +
+  scale_x_date(
+    date_breaks = "4 months",
+    labels = c("Jan\n2017", "Apr", "Jul", "Oct", "Jan\n2018", "Apr", "Jul", "Oct")
+  ) +
+  coord_cartesian(xlim = as.Date(c("2016-12-31", "2019-01-01"))) 
+```
+
+## Airline Passengers
+
+The number of passenters in international flights in the 50s displays both a trend and a seasonal pattern
+
+```{r}
+airline <- read.csv(here("data", "international-airline-passengers.csv"), sep = ";") |>
+  mutate(Month = paste0(Month, "-01"),
+         Month = as_date(Month))
+```
+
+```{r}
+airline |> head()
+```
+
+```{r}
+airline |>
+  ggplot(aes(x = Month, y = Passengers)) +
+  geom_line(size = 1, color = "#378DBD") +
+  labs(x = "Date", y = "DIJA") +
+  scale_x_date(date_breaks = "2 years", 
+               date_labels = "%Y")
+```
+
+## Types of non-stationarity
+
+There are several kinds of non-stationarity. Here we illustrate the most common ones with simple toy examples:
+
+```{r}
+# Create data
+x <- seq(0, 10*pi, length.out = 360)
+y <- sin(x)
+df <- tibble(
+  x = x,
+  stationary = y,
+  changing_mean = y + x/10,
+  changing_variance = y * x/10,
+  changing_covariance = sin(x + x^2/30)
+)
+
+# Plot
+plots <- list(
+  ggplot(df, aes(x = x, y = stationary)) +
+    geom_line(size = 1, color = "#378DBD") +
+    labs(title = "Stationary series", x = "time", y = "Amplitude"),
+  
+  ggplot(df, aes(x = x, y = changing_mean)) +
+    geom_line(size = 1, color = "#378DBD") +
+    labs(title = "Changing mean", x = "time", y = "Amplitude"),
+  
+  ggplot(df, aes(x = x, y = changing_variance)) +
+    geom_line(size = 1, color = "#378DBD") +
+    labs(title = "Changing Variance", x = "time", y = "Amplitude"),
+  
+  ggplot(df, aes(x = x, y = changing_covariance)) +
+    geom_line(size = 1, color = "#378DBD") +
+    labs(title = "Changing Co-variance", x = "time", y = "Amplitude")
+)
+
+# Arrange the plots in a grid
+gridExtra::grid.arrange(plots[[1]], plots[[2]], plots[[3]], plots[[4]], ncol = 2)
+
+```
+
+## Kinds of trend
+
+Two of the most common non-stationarity types are due to differnet kinds of trends that we illustrate here:
+
+```{r}
+# Create data
+x <- seq(0, 10*pi, length.out = 360)
+y <- sin(x)
+df <- tibble(
+  x = x,
+  additive_trend = y + x/10,
+  multiplicative_trend = y * x/10
+)
+
+# Additive Trend Plot
+additive_plot <- ggplot(df, aes(x = x, y = additive_trend)) +
+  geom_line(size = 1, color = "#378DBD") +
+  labs(title = "Additive Trend", x = "time", y = "Amplitude") 
+
+# Multiplicative Trend Plot
+multiplicative_plot <- ggplot(df, aes(x = x, y = multiplicative_trend)) +
+  geom_line(size = 1, color = "#378DBD") +
+  labs(title = "Multiplicative Trend", x = "time", y = "Amplitude") 
+
+# Arrange the plots side by side
+gridExtra::grid.arrange(additive_plot, multiplicative_plot, ncol = 2)
+```

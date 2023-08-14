@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Greg Chism">
+
+<title>Data Exploration</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="dataExploration_files/libs/clipboard/clipboard.min.js"></script>
+<script src="dataExploration_files/libs/quarto-html/quarto.js"></script>
+<script src="dataExploration_files/libs/quarto-html/popper.min.js"></script>
+<script src="dataExploration_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="dataExploration_files/libs/quarto-html/anchor.min.js"></script>
+<link href="dataExploration_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="dataExploration_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="dataExploration_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="dataExploration_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="dataExploration_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="dataExploration_files/libs/htmlwidgets-1.6.2/htmlwidgets.js"></script>
+<script src="dataExploration_files/libs/plotly-binding-4.10.2/plotly.js"></script>
+<script src="dataExploration_files/libs/typedarray-0.1/typedarray.min.js"></script>
+<script src="dataExploration_files/libs/jquery-3.5.1/jquery.min.js"></script>
+<link href="dataExploration_files/libs/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet">
+<script src="dataExploration_files/libs/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="dataExploration_files/libs/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet">
+<script src="dataExploration_files/libs/plotly-main-2.11.1/plotly-latest.min.js"></script>
+
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#time-series-analysis-i-data-exploration" id="toc-time-series-analysis-i-data-exploration" class="nav-link active" data-scroll-target="#time-series-analysis-i-data-exploration">Time Series Analysis I: Data Exploration</a></li>
+  <li><a href="#install-packages" id="toc-install-packages" class="nav-link" data-scroll-target="#install-packages">Install packages</a></li>
+  <li><a href="#gdp-data" id="toc-gdp-data" class="nav-link" data-scroll-target="#gdp-data">GDP Data</a>
+  <ul class="collapse">
+  <li><a href="#diagnose-the-dataset" id="toc-diagnose-the-dataset" class="nav-link" data-scroll-target="#diagnose-the-dataset">Diagnose the dataset</a></li>
+  <li><a href="#glimpse-the-dataset" id="toc-glimpse-the-dataset" class="nav-link" data-scroll-target="#glimpse-the-dataset">Glimpse the dataset</a></li>
+  <li><a href="#plot-the-gdp-as-a-time-series" id="toc-plot-the-gdp-as-a-time-series" class="nav-link" data-scroll-target="#plot-the-gdp-as-a-time-series">Plot the GDP as a time series</a></li>
+  </ul></li>
+  <li><a href="#influenza-mortality" id="toc-influenza-mortality" class="nav-link" data-scroll-target="#influenza-mortality">Influenza mortality</a>
+  <ul class="collapse">
+  <li><a href="#glimpse-the-data" id="toc-glimpse-the-data" class="nav-link" data-scroll-target="#glimpse-the-data">Glimpse the data</a></li>
+  <li><a href="#plot-influenza-mortality-as-a-time-series" id="toc-plot-influenza-mortality-as-a-time-series" class="nav-link" data-scroll-target="#plot-influenza-mortality-as-a-time-series">Plot Influenza mortality as a time series</a></li>
+  </ul></li>
+  <li><a href="#sun-activity" id="toc-sun-activity" class="nav-link" data-scroll-target="#sun-activity">Sun activity</a>
+  <ul class="collapse">
+  <li><a href="#glimpse-the-data-1" id="toc-glimpse-the-data-1" class="nav-link" data-scroll-target="#glimpse-the-data-1">Glimpse the data</a></li>
+  </ul></li>
+  <li><a href="#dow-jones-industrial-average" id="toc-dow-jones-industrial-average" class="nav-link" data-scroll-target="#dow-jones-industrial-average">Dow-Jones Industrial Average</a>
+  <ul class="collapse">
+  <li><a href="#glimpse-the-data-2" id="toc-glimpse-the-data-2" class="nav-link" data-scroll-target="#glimpse-the-data-2">Glimpse the data</a></li>
+  <li><a href="#diagnose-the-data" id="toc-diagnose-the-data" class="nav-link" data-scroll-target="#diagnose-the-data">Diagnose the data</a></li>
+  </ul></li>
+  <li><a href="#airline-passengers" id="toc-airline-passengers" class="nav-link" data-scroll-target="#airline-passengers">Airline Passengers</a></li>
+  <li><a href="#types-of-non-stationarity" id="toc-types-of-non-stationarity" class="nav-link" data-scroll-target="#types-of-non-stationarity">Types of non-stationarity</a></li>
+  <li><a href="#kinds-of-trend" id="toc-kinds-of-trend" class="nav-link" data-scroll-target="#kinds-of-trend">Kinds of trend</a></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Data Exploration</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Greg Chism </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="time-series-analysis-i-data-exploration" class="level2">
+<h2 class="anchored" data-anchor-id="time-series-analysis-i-data-exploration">Time Series Analysis I: Data Exploration</h2>
+</section>
+<section id="install-packages" class="level2">
+<h2 class="anchored" data-anchor-id="install-packages">Install packages</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">require</span>(pacman)) <span class="fu">install.packages</span>(<span class="st">'pacman'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: pacman</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">p_load</span>(colorblindr,</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>       dlookr,</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>       here,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>       janitor,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>       tidyverse,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>       timetk)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="fu">theme_set</span>(<span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">16</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="gdp-data" class="level2">
+<h2 class="anchored" data-anchor-id="gdp-data">GDP Data</h2>
+<p>The first timeseries will consider is the US Quarterly GDP for the past 70 years.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>GDP <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"GDP.csv"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">DATE =</span> <span class="fu">as_date</span>(DATE))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 290 Columns: 2
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+dbl  (1): GDP
+date (1): DATE
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+</div>
+<section id="diagnose-the-dataset" class="level3">
+<h3 class="anchored" data-anchor-id="diagnose-the-dataset">Diagnose the dataset</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>GDP <span class="sc">|&gt;</span> <span class="fu">diagnose</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 6
+  variables types   missing_count missing_percent unique_count unique_rate
+  &lt;chr&gt;     &lt;chr&gt;           &lt;int&gt;           &lt;dbl&gt;        &lt;int&gt;       &lt;dbl&gt;
+1 DATE      Date                0               0          290           1
+2 GDP       numeric             0               0          290           1</code></pre>
+</div>
+</div>
+</section>
+<section id="glimpse-the-dataset" class="level3">
+<h3 class="anchored" data-anchor-id="glimpse-the-dataset">Glimpse the dataset</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>GDP <span class="sc">|&gt;</span> <span class="fu">glimpse</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 290
+Columns: 2
+$ DATE &lt;date&gt; 1947-01-01, 1947-04-01, 1947-07-01, 1947-10-01, 1948-01-01, 1948…
+$ GDP  &lt;dbl&gt; 2033.061, 2027.639, 2023.452, 2055.103, 2086.017, 2120.450, 2132.…</code></pre>
+</div>
+</div>
+</section>
+<section id="plot-the-gdp-as-a-time-series" class="level3">
+<h3 class="anchored" data-anchor-id="plot-the-gdp-as-a-time-series">Plot the GDP as a time series</h3>
+<p>There is a clear upward trend:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>GDP <span class="sc">|&gt;</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot_time_series</span>(<span class="at">.date_var =</span> DATE,</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>                   <span class="at">.value =</span> GDP,</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>                   <span class="at">.interactive =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>                   <span class="at">.x_lab =</span> <span class="st">"Date"</span>,</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>                   <span class="at">.y_lab =</span> <span class="st">"GDP ($B)"</span>,</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>                   <span class="at">.smooth =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>                   <span class="at">.line_color =</span> <span class="st">"#378DBD"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="plotly html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-7a0d62af23f893ece742" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-7a0d62af23f893ece742">{"x":{"data":[{"x":["1947-01-01","1947-04-01","1947-07-01","1947-10-01","1948-01-01","1948-04-01","1948-07-01","1948-10-01","1949-01-01","1949-04-01","1949-07-01","1949-10-01","1950-01-01","1950-04-01","1950-07-01","1950-10-01","1951-01-01","1951-04-01","1951-07-01","1951-10-01","1952-01-01","1952-04-01","1952-07-01","1952-10-01","1953-01-01","1953-04-01","1953-07-01","1953-10-01","1954-01-01","1954-04-01","1954-07-01","1954-10-01","1955-01-01","1955-04-01","1955-07-01","1955-10-01","1956-01-01","1956-04-01","1956-07-01","1956-10-01","1957-01-01","1957-04-01","1957-07-01","1957-10-01","1958-01-01","1958-04-01","1958-07-01","1958-10-01","1959-01-01","1959-04-01","1959-07-01","1959-10-01","1960-01-01","1960-04-01","1960-07-01","1960-10-01","1961-01-01","1961-04-01","1961-07-01","1961-10-01","1962-01-01","1962-04-01","1962-07-01","1962-10-01","1963-01-01","1963-04-01","1963-07-01","1963-10-01","1964-01-01","1964-04-01","1964-07-01","1964-10-01","1965-01-01","1965-04-01","1965-07-01","1965-10-01","1966-01-01","1966-04-01","1966-07-01","1966-10-01","1967-01-01","1967-04-01","1967-07-01","1967-10-01","1968-01-01","1968-04-01","1968-07-01","1968-10-01","1969-01-01","1969-04-01","1969-07-01","1969-10-01","1970-01-01","1970-04-01","1970-07-01","1970-10-01","1971-01-01","1971-04-01","1971-07-01","1971-10-01","1972-01-01","1972-04-01","1972-07-01","1972-10-01","1973-01-01","1973-04-01","1973-07-01","1973-10-01","1974-01-01","1974-04-01","1974-07-01","1974-10-01","1975-01-01","1975-04-01","1975-07-01","1975-10-01","1976-01-01","1976-04-01","1976-07-01","1976-10-01","1977-01-01","1977-04-01","1977-07-01","1977-10-01","1978-01-01","1978-04-01","1978-07-01","1978-10-01","1979-01-01","1979-04-01","1979-07-01","1979-10-01","1980-01-01","1980-04-01","1980-07-01","1980-10-01","1981-01-01","1981-04-01","1981-07-01","1981-10-01","1982-01-01","1982-04-01","1982-07-01","1982-10-01","1983-01-01","1983-04-01","1983-07-01","1983-10-01","1984-01-01","1984-04-01","1984-07-01","1984-10-01","1985-01-01","1985-04-01","1985-07-01","1985-10-01","1986-01-01","1986-04-01","1986-07-01","1986-10-01","1987-01-01","1987-04-01","1987-07-01","1987-10-01","1988-01-01","1988-04-01","1988-07-01","1988-10-01","1989-01-01","1989-04-01","1989-07-01","1989-10-01","1990-01-01","1990-04-01","1990-07-01","1990-10-01","1991-01-01","1991-04-01","1991-07-01","1991-10-01","1992-01-01","1992-04-01","1992-07-01","1992-10-01","1993-01-01","1993-04-01","1993-07-01","1993-10-01","1994-01-01","1994-04-01","1994-07-01","1994-10-01","1995-01-01","1995-04-01","1995-07-01","1995-10-01","1996-01-01","1996-04-01","1996-07-01","1996-10-01","1997-01-01","1997-04-01","1997-07-01","1997-10-01","1998-01-01","1998-04-01","1998-07-01","1998-10-01","1999-01-01","1999-04-01","1999-07-01","1999-10-01","2000-01-01","2000-04-01","2000-07-01","2000-10-01","2001-01-01","2001-04-01","2001-07-01","2001-10-01","2002-01-01","2002-04-01","2002-07-01","2002-10-01","2003-01-01","2003-04-01","2003-07-01","2003-10-01","2004-01-01","2004-04-01","2004-07-01","2004-10-01","2005-01-01","2005-04-01","2005-07-01","2005-10-01","2006-01-01","2006-04-01","2006-07-01","2006-10-01","2007-01-01","2007-04-01","2007-07-01","2007-10-01","2008-01-01","2008-04-01","2008-07-01","2008-10-01","2009-01-01","2009-04-01","2009-07-01","2009-10-01","2010-01-01","2010-04-01","2010-07-01","2010-10-01","2011-01-01","2011-04-01","2011-07-01","2011-10-01","2012-01-01","2012-04-01","2012-07-01","2012-10-01","2013-01-01","2013-04-01","2013-07-01","2013-10-01","2014-01-01","2014-04-01","2014-07-01","2014-10-01","2015-01-01","2015-04-01","2015-07-01","2015-10-01","2016-01-01","2016-04-01","2016-07-01","2016-10-01","2017-01-01","2017-04-01","2017-07-01","2017-10-01","2018-01-01","2018-04-01","2018-07-01","2018-10-01","2019-01-01","2019-04-01"],"y":[2033.0609999999999,2027.6389999999999,2023.452,2055.1030000000001,2086.0169999999998,2120.4499999999998,2132.598,2134.9810000000002,2105.5619999999999,2098.3800000000001,2120.0439999999999,2102.2510000000002,2184.8719999999998,2251.5070000000001,2338.5140000000001,2383.2910000000002,2415.6599999999999,2457.5169999999998,2508.1660000000002,2513.6900000000001,2540.5500000000002,2546.0219999999999,2564.4009999999998,2648.6210000000001,2697.855,2718.7089999999998,2703.4110000000001,2662.482,2649.7550000000001,2652.643,2682.6010000000001,2735.0909999999999,2813.212,2858.9879999999998,2897.598,2914.9929999999999,2903.6709999999998,2927.665,2925.0349999999999,2973.1790000000001,2992.2190000000001,2985.663,3014.9189999999999,2983.7269999999999,2906.2739999999999,2925.3789999999999,2993.0680000000002,3063.085,3121.9360000000001,3192.3800000000001,3194.6529999999998,3203.759,3275.7570000000001,3258.0880000000002,3274.029,3232.009,3253.826,3309.0590000000002,3372.5810000000001,3438.721,3500.0540000000001,3531.683,3575.0700000000002,3586.8270000000002,3625.9810000000002,3666.6689999999999,3747.2779999999998,3771.8449999999998,3851.366,3893.2959999999998,3954.1210000000001,3966.335,4062.3110000000001,4113.6289999999999,4205.0860000000002,4301.973,4406.6930000000002,4421.7470000000003,4459.1949999999997,4495.777,4535.5910000000003,4538.3699999999999,4581.3090000000002,4615.8530000000001,4709.9930000000004,4788.6880000000001,4825.799,4844.7790000000005,4920.6049999999996,4935.5640000000003,4968.1639999999998,4943.9350000000004,4936.5940000000001,4943.6000000000004,4989.1589999999997,4935.6930000000002,5069.7460000000001,5097.1790000000001,5139.1279999999997,5151.2449999999999,5245.9740000000002,5365.0450000000001,5415.7120000000004,5506.3959999999997,5642.6689999999999,5704.098,5674.1000000000004,5727.96,5678.7129999999997,5692.21,5638.4110000000001,5616.5259999999998,5548.1559999999999,5587.8000000000002,5683.4440000000004,5759.9719999999998,5889.5,5932.7110000000002,5965.2650000000003,6008.5039999999999,6079.4939999999997,6197.6859999999997,6309.5140000000001,6309.652,6329.7910000000002,6574.3900000000003,6640.4970000000003,6729.7550000000001,6741.8540000000003,6749.0630000000001,6799.1999999999998,6816.2030000000004,6837.6409999999996,6696.7529999999997,6688.7939999999999,6813.5349999999999,6947.0420000000004,6895.5590000000002,6978.1350000000002,6902.1049999999996,6794.8779999999997,6825.8760000000002,6799.7809999999999,6802.4970000000003,6892.1440000000002,7048.982,7189.8959999999997,7339.893,7483.3710000000001,7612.6679999999997,7686.0590000000002,7749.1509999999998,7824.2470000000003,7893.1360000000004,8013.674,8073.2389999999996,8148.6030000000001,8185.3029999999999,8263.6389999999992,8308.0210000000006,8369.9300000000003,8460.2330000000002,8533.6350000000002,8680.1620000000003,8725.0059999999994,8839.6409999999996,8891.4349999999995,9009.9130000000005,9101.5079999999998,9170.9770000000008,9238.9230000000007,9257.1280000000006,9358.2890000000007,9392.2510000000002,9398.4989999999998,9312.9369999999999,9269.3670000000002,9341.6419999999998,9388.8449999999993,9421.5650000000005,9534.3459999999995,9637.732,9732.9789999999994,9834.5100000000002,9850.973,9908.3469999999998,9955.6409999999996,10091.049000000001,10188.954,10327.019,10387.382,10506.371999999999,10543.644,10575.1,10665.059999999999,10737.477999999999,10817.896000000001,10998.322,11096.976000000001,11212.205,11284.587,11472.137000000001,11615.636,11715.393,11832.486000000001,11942.031999999999,12091.614,12287,12403.293,12498.694,12662.385,12877.593000000001,12924.179,13160.842000000001,13178.419,13260.505999999999,13222.690000000001,13299.984,13244.784,13280.859,13397.002,13478.152,13538.072,13559.031999999999,13634.253000000001,13751.543,13985.073,14145.645,14221.147000000001,14329.522999999999,14464.984,14609.876,14771.602000000001,14839.781999999999,14972.054,15066.597,15267.026,15302.705,15326.368,15456.928,15493.328,15582.084999999999,15666.737999999999,15761.967000000001,15671.383,15752.308000000001,15667.031999999999,15328.027,15155.940000000001,15134.117,15189.222,15356.058000000001,15415.145,15557.277,15671.967000000001,15750.625,15712.754000000001,15825.096,15820.700000000001,16004.107,16129.418,16198.807000000001,16220.666999999999,16239.138000000001,16382.964,16403.18,16531.685000000001,16663.649000000001,16616.540000000001,16841.474999999999,17047.098000000002,17143.038,17277.580000000002,17405.669000000002,17463.222000000002,17468.901999999998,17556.839,17639.417000000001,17735.074000000001,17824.231,17925.256000000001,18021.047999999999,18163.558000000001,18322.464,18438.254000000001,18598.134999999998,18732.720000000001,18783.547999999999,18927.280999999999,19021.860000000001],"text":["DATE: 1947-01-01<br />.value:  2033.061","DATE: 1947-04-01<br />.value:  2027.639","DATE: 1947-07-01<br />.value:  2023.452","DATE: 1947-10-01<br />.value:  2055.103","DATE: 1948-01-01<br />.value:  2086.017","DATE: 1948-04-01<br />.value:  2120.450","DATE: 1948-07-01<br />.value:  2132.598","DATE: 1948-10-01<br />.value:  2134.981","DATE: 1949-01-01<br />.value:  2105.562","DATE: 1949-04-01<br />.value:  2098.380","DATE: 1949-07-01<br />.value:  2120.044","DATE: 1949-10-01<br />.value:  2102.251","DATE: 1950-01-01<br />.value:  2184.872","DATE: 1950-04-01<br />.value:  2251.507","DATE: 1950-07-01<br />.value:  2338.514","DATE: 1950-10-01<br />.value:  2383.291","DATE: 1951-01-01<br />.value:  2415.660","DATE: 1951-04-01<br />.value:  2457.517","DATE: 1951-07-01<br />.value:  2508.166","DATE: 1951-10-01<br />.value:  2513.690","DATE: 1952-01-01<br />.value:  2540.550","DATE: 1952-04-01<br />.value:  2546.022","DATE: 1952-07-01<br />.value:  2564.401","DATE: 1952-10-01<br />.value:  2648.621","DATE: 1953-01-01<br />.value:  2697.855","DATE: 1953-04-01<br />.value:  2718.709","DATE: 1953-07-01<br />.value:  2703.411","DATE: 1953-10-01<br />.value:  2662.482","DATE: 1954-01-01<br />.value:  2649.755","DATE: 1954-04-01<br />.value:  2652.643","DATE: 1954-07-01<br />.value:  2682.601","DATE: 1954-10-01<br />.value:  2735.091","DATE: 1955-01-01<br />.value:  2813.212","DATE: 1955-04-01<br />.value:  2858.988","DATE: 1955-07-01<br />.value:  2897.598","DATE: 1955-10-01<br />.value:  2914.993","DATE: 1956-01-01<br />.value:  2903.671","DATE: 1956-04-01<br />.value:  2927.665","DATE: 1956-07-01<br />.value:  2925.035","DATE: 1956-10-01<br />.value:  2973.179","DATE: 1957-01-01<br />.value:  2992.219","DATE: 1957-04-01<br />.value:  2985.663","DATE: 1957-07-01<br />.value:  3014.919","DATE: 1957-10-01<br />.value:  2983.727","DATE: 1958-01-01<br />.value:  2906.274","DATE: 1958-04-01<br />.value:  2925.379","DATE: 1958-07-01<br />.value:  2993.068","DATE: 1958-10-01<br />.value:  3063.085","DATE: 1959-01-01<br />.value:  3121.936","DATE: 1959-04-01<br />.value:  3192.380","DATE: 1959-07-01<br />.value:  3194.653","DATE: 1959-10-01<br />.value:  3203.759","DATE: 1960-01-01<br />.value:  3275.757","DATE: 1960-04-01<br />.value:  3258.088","DATE: 1960-07-01<br />.value:  3274.029","DATE: 1960-10-01<br />.value:  3232.009","DATE: 1961-01-01<br />.value:  3253.826","DATE: 1961-04-01<br />.value:  3309.059","DATE: 1961-07-01<br />.value:  3372.581","DATE: 1961-10-01<br />.value:  3438.721","DATE: 1962-01-01<br />.value:  3500.054","DATE: 1962-04-01<br />.value:  3531.683","DATE: 1962-07-01<br />.value:  3575.070","DATE: 1962-10-01<br />.value:  3586.827","DATE: 1963-01-01<br />.value:  3625.981","DATE: 1963-04-01<br />.value:  3666.669","DATE: 1963-07-01<br />.value:  3747.278","DATE: 1963-10-01<br />.value:  3771.845","DATE: 1964-01-01<br />.value:  3851.366","DATE: 1964-04-01<br />.value:  3893.296","DATE: 1964-07-01<br />.value:  3954.121","DATE: 1964-10-01<br />.value:  3966.335","DATE: 1965-01-01<br />.value:  4062.311","DATE: 1965-04-01<br />.value:  4113.629","DATE: 1965-07-01<br />.value:  4205.086","DATE: 1965-10-01<br />.value:  4301.973","DATE: 1966-01-01<br />.value:  4406.693","DATE: 1966-04-01<br />.value:  4421.747","DATE: 1966-07-01<br />.value:  4459.195","DATE: 1966-10-01<br />.value:  4495.777","DATE: 1967-01-01<br />.value:  4535.591","DATE: 1967-04-01<br />.value:  4538.370","DATE: 1967-07-01<br />.value:  4581.309","DATE: 1967-10-01<br />.value:  4615.853","DATE: 1968-01-01<br />.value:  4709.993","DATE: 1968-04-01<br />.value:  4788.688","DATE: 1968-07-01<br />.value:  4825.799","DATE: 1968-10-01<br />.value:  4844.779","DATE: 1969-01-01<br />.value:  4920.605","DATE: 1969-04-01<br />.value:  4935.564","DATE: 1969-07-01<br />.value:  4968.164","DATE: 1969-10-01<br />.value:  4943.935","DATE: 1970-01-01<br />.value:  4936.594","DATE: 1970-04-01<br />.value:  4943.600","DATE: 1970-07-01<br />.value:  4989.159","DATE: 1970-10-01<br />.value:  4935.693","DATE: 1971-01-01<br />.value:  5069.746","DATE: 1971-04-01<br />.value:  5097.179","DATE: 1971-07-01<br />.value:  5139.128","DATE: 1971-10-01<br />.value:  5151.245","DATE: 1972-01-01<br />.value:  5245.974","DATE: 1972-04-01<br />.value:  5365.045","DATE: 1972-07-01<br />.value:  5415.712","DATE: 1972-10-01<br />.value:  5506.396","DATE: 1973-01-01<br />.value:  5642.669","DATE: 1973-04-01<br />.value:  5704.098","DATE: 1973-07-01<br />.value:  5674.100","DATE: 1973-10-01<br />.value:  5727.960","DATE: 1974-01-01<br />.value:  5678.713","DATE: 1974-04-01<br />.value:  5692.210","DATE: 1974-07-01<br />.value:  5638.411","DATE: 1974-10-01<br />.value:  5616.526","DATE: 1975-01-01<br />.value:  5548.156","DATE: 1975-04-01<br />.value:  5587.800","DATE: 1975-07-01<br />.value:  5683.444","DATE: 1975-10-01<br />.value:  5759.972","DATE: 1976-01-01<br />.value:  5889.500","DATE: 1976-04-01<br />.value:  5932.711","DATE: 1976-07-01<br />.value:  5965.265","DATE: 1976-10-01<br />.value:  6008.504","DATE: 1977-01-01<br />.value:  6079.494","DATE: 1977-04-01<br />.value:  6197.686","DATE: 1977-07-01<br />.value:  6309.514","DATE: 1977-10-01<br />.value:  6309.652","DATE: 1978-01-01<br />.value:  6329.791","DATE: 1978-04-01<br />.value:  6574.390","DATE: 1978-07-01<br />.value:  6640.497","DATE: 1978-10-01<br />.value:  6729.755","DATE: 1979-01-01<br />.value:  6741.854","DATE: 1979-04-01<br />.value:  6749.063","DATE: 1979-07-01<br />.value:  6799.200","DATE: 1979-10-01<br />.value:  6816.203","DATE: 1980-01-01<br />.value:  6837.641","DATE: 1980-04-01<br />.value:  6696.753","DATE: 1980-07-01<br />.value:  6688.794","DATE: 1980-10-01<br />.value:  6813.535","DATE: 1981-01-01<br />.value:  6947.042","DATE: 1981-04-01<br />.value:  6895.559","DATE: 1981-07-01<br />.value:  6978.135","DATE: 1981-10-01<br />.value:  6902.105","DATE: 1982-01-01<br />.value:  6794.878","DATE: 1982-04-01<br />.value:  6825.876","DATE: 1982-07-01<br />.value:  6799.781","DATE: 1982-10-01<br />.value:  6802.497","DATE: 1983-01-01<br />.value:  6892.144","DATE: 1983-04-01<br />.value:  7048.982","DATE: 1983-07-01<br />.value:  7189.896","DATE: 1983-10-01<br />.value:  7339.893","DATE: 1984-01-01<br />.value:  7483.371","DATE: 1984-04-01<br />.value:  7612.668","DATE: 1984-07-01<br />.value:  7686.059","DATE: 1984-10-01<br />.value:  7749.151","DATE: 1985-01-01<br />.value:  7824.247","DATE: 1985-04-01<br />.value:  7893.136","DATE: 1985-07-01<br />.value:  8013.674","DATE: 1985-10-01<br />.value:  8073.239","DATE: 1986-01-01<br />.value:  8148.603","DATE: 1986-04-01<br />.value:  8185.303","DATE: 1986-07-01<br />.value:  8263.639","DATE: 1986-10-01<br />.value:  8308.021","DATE: 1987-01-01<br />.value:  8369.930","DATE: 1987-04-01<br />.value:  8460.233","DATE: 1987-07-01<br />.value:  8533.635","DATE: 1987-10-01<br />.value:  8680.162","DATE: 1988-01-01<br />.value:  8725.006","DATE: 1988-04-01<br />.value:  8839.641","DATE: 1988-07-01<br />.value:  8891.435","DATE: 1988-10-01<br />.value:  9009.913","DATE: 1989-01-01<br />.value:  9101.508","DATE: 1989-04-01<br />.value:  9170.977","DATE: 1989-07-01<br />.value:  9238.923","DATE: 1989-10-01<br />.value:  9257.128","DATE: 1990-01-01<br />.value:  9358.289","DATE: 1990-04-01<br />.value:  9392.251","DATE: 1990-07-01<br />.value:  9398.499","DATE: 1990-10-01<br />.value:  9312.937","DATE: 1991-01-01<br />.value:  9269.367","DATE: 1991-04-01<br />.value:  9341.642","DATE: 1991-07-01<br />.value:  9388.845","DATE: 1991-10-01<br />.value:  9421.565","DATE: 1992-01-01<br />.value:  9534.346","DATE: 1992-04-01<br />.value:  9637.732","DATE: 1992-07-01<br />.value:  9732.979","DATE: 1992-10-01<br />.value:  9834.510","DATE: 1993-01-01<br />.value:  9850.973","DATE: 1993-04-01<br />.value:  9908.347","DATE: 1993-07-01<br />.value:  9955.641","DATE: 1993-10-01<br />.value: 10091.049","DATE: 1994-01-01<br />.value: 10188.954","DATE: 1994-04-01<br />.value: 10327.019","DATE: 1994-07-01<br />.value: 10387.382","DATE: 1994-10-01<br />.value: 10506.372","DATE: 1995-01-01<br />.value: 10543.644","DATE: 1995-04-01<br />.value: 10575.100","DATE: 1995-07-01<br />.value: 10665.060","DATE: 1995-10-01<br />.value: 10737.478","DATE: 1996-01-01<br />.value: 10817.896","DATE: 1996-04-01<br />.value: 10998.322","DATE: 1996-07-01<br />.value: 11096.976","DATE: 1996-10-01<br />.value: 11212.205","DATE: 1997-01-01<br />.value: 11284.587","DATE: 1997-04-01<br />.value: 11472.137","DATE: 1997-07-01<br />.value: 11615.636","DATE: 1997-10-01<br />.value: 11715.393","DATE: 1998-01-01<br />.value: 11832.486","DATE: 1998-04-01<br />.value: 11942.032","DATE: 1998-07-01<br />.value: 12091.614","DATE: 1998-10-01<br />.value: 12287.000","DATE: 1999-01-01<br />.value: 12403.293","DATE: 1999-04-01<br />.value: 12498.694","DATE: 1999-07-01<br />.value: 12662.385","DATE: 1999-10-01<br />.value: 12877.593","DATE: 2000-01-01<br />.value: 12924.179","DATE: 2000-04-01<br />.value: 13160.842","DATE: 2000-07-01<br />.value: 13178.419","DATE: 2000-10-01<br />.value: 13260.506","DATE: 2001-01-01<br />.value: 13222.690","DATE: 2001-04-01<br />.value: 13299.984","DATE: 2001-07-01<br />.value: 13244.784","DATE: 2001-10-01<br />.value: 13280.859","DATE: 2002-01-01<br />.value: 13397.002","DATE: 2002-04-01<br />.value: 13478.152","DATE: 2002-07-01<br />.value: 13538.072","DATE: 2002-10-01<br />.value: 13559.032","DATE: 2003-01-01<br />.value: 13634.253","DATE: 2003-04-01<br />.value: 13751.543","DATE: 2003-07-01<br />.value: 13985.073","DATE: 2003-10-01<br />.value: 14145.645","DATE: 2004-01-01<br />.value: 14221.147","DATE: 2004-04-01<br />.value: 14329.523","DATE: 2004-07-01<br />.value: 14464.984","DATE: 2004-10-01<br />.value: 14609.876","DATE: 2005-01-01<br />.value: 14771.602","DATE: 2005-04-01<br />.value: 14839.782","DATE: 2005-07-01<br />.value: 14972.054","DATE: 2005-10-01<br />.value: 15066.597","DATE: 2006-01-01<br />.value: 15267.026","DATE: 2006-04-01<br />.value: 15302.705","DATE: 2006-07-01<br />.value: 15326.368","DATE: 2006-10-01<br />.value: 15456.928","DATE: 2007-01-01<br />.value: 15493.328","DATE: 2007-04-01<br />.value: 15582.085","DATE: 2007-07-01<br />.value: 15666.738","DATE: 2007-10-01<br />.value: 15761.967","DATE: 2008-01-01<br />.value: 15671.383","DATE: 2008-04-01<br />.value: 15752.308","DATE: 2008-07-01<br />.value: 15667.032","DATE: 2008-10-01<br />.value: 15328.027","DATE: 2009-01-01<br />.value: 15155.940","DATE: 2009-04-01<br />.value: 15134.117","DATE: 2009-07-01<br />.value: 15189.222","DATE: 2009-10-01<br />.value: 15356.058","DATE: 2010-01-01<br />.value: 15415.145","DATE: 2010-04-01<br />.value: 15557.277","DATE: 2010-07-01<br />.value: 15671.967","DATE: 2010-10-01<br />.value: 15750.625","DATE: 2011-01-01<br />.value: 15712.754","DATE: 2011-04-01<br />.value: 15825.096","DATE: 2011-07-01<br />.value: 15820.700","DATE: 2011-10-01<br />.value: 16004.107","DATE: 2012-01-01<br />.value: 16129.418","DATE: 2012-04-01<br />.value: 16198.807","DATE: 2012-07-01<br />.value: 16220.667","DATE: 2012-10-01<br />.value: 16239.138","DATE: 2013-01-01<br />.value: 16382.964","DATE: 2013-04-01<br />.value: 16403.180","DATE: 2013-07-01<br />.value: 16531.685","DATE: 2013-10-01<br />.value: 16663.649","DATE: 2014-01-01<br />.value: 16616.540","DATE: 2014-04-01<br />.value: 16841.475","DATE: 2014-07-01<br />.value: 17047.098","DATE: 2014-10-01<br />.value: 17143.038","DATE: 2015-01-01<br />.value: 17277.580","DATE: 2015-04-01<br />.value: 17405.669","DATE: 2015-07-01<br />.value: 17463.222","DATE: 2015-10-01<br />.value: 17468.902","DATE: 2016-01-01<br />.value: 17556.839","DATE: 2016-04-01<br />.value: 17639.417","DATE: 2016-07-01<br />.value: 17735.074","DATE: 2016-10-01<br />.value: 17824.231","DATE: 2017-01-01<br />.value: 17925.256","DATE: 2017-04-01<br />.value: 18021.048","DATE: 2017-07-01<br />.value: 18163.558","DATE: 2017-10-01<br />.value: 18322.464","DATE: 2018-01-01<br />.value: 18438.254","DATE: 2018-04-01<br />.value: 18598.135","DATE: 2018-07-01<br />.value: 18732.720","DATE: 2018-10-01<br />.value: 18783.548","DATE: 2019-01-01<br />.value: 18927.281","DATE: 2019-04-01<br />.value: 19021.860"],"type":"scatter","mode":"lines","line":{"width":1.8897637795275593,"color":"rgba(55,141,189,1)","dash":"solid"},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":43.762557077625573,"r":7.3059360730593621,"b":40.182648401826498,"l":54.794520547945211},"plot_bgcolor":"rgba(255,255,255,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(44,62,80,1)","family":"","size":14.611872146118724},"title":{"text":"Time Series Plot","font":{"color":"rgba(44,62,80,1)","family":"","size":17.534246575342465},"x":0,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"date","autorange":true,"range":["1943-05-22","2022-11-10"],"tickmode":"auto","ticktext":["1960","1980","2000","2020"],"tickvals":[-3653,3652,10957.000000000002,18262],"categoryorder":"array","categoryarray":["1960","1980","2000","2020"],"nticks":null,"ticks":"outside","tickcolor":"rgba(204,204,204,1)","ticklen":3.6529680365296811,"tickwidth":0.22139200221392005,"showticklabels":true,"tickfont":{"color":"rgba(44,62,80,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(204,204,204,1)","gridwidth":0.22139200221392005,"zeroline":false,"anchor":"y","title":{"text":"Date","font":{"color":"rgba(44,62,80,1)","family":"","size":14.611872146118724}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":true,"range":[1173.5316,19871.7804],"tickmode":"auto","ticktext":["5000","10000","15000"],"tickvals":[5000,10000,15000],"categoryorder":"array","categoryarray":["5000","10000","15000"],"nticks":null,"ticks":"outside","tickcolor":"rgba(204,204,204,1)","ticklen":3.6529680365296811,"tickwidth":0.22139200221392005,"showticklabels":true,"tickfont":{"color":"rgba(44,62,80,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(204,204,204,1)","gridwidth":0.22139200221392005,"zeroline":false,"anchor":"x","title":{"text":"GDP ($B)","font":{"color":"rgba(44,62,80,1)","family":"","size":14.611872146118724}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":"transparent","line":{"color":"rgba(44,62,80,1)","width":0.33208800332088001,"linetype":"solid"},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":false,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.8897637795275593,"font":{"color":"rgba(44,62,80,1)","family":"","size":11.68949771689498}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"182cc17c8de36":{"x":{},"y":{},"type":"scatter"}},"cur_data":"182cc17c8de36","visdat":{"182cc17c8de36":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+</section>
+</section>
+<section id="influenza-mortality" class="level2">
+<h2 class="anchored" data-anchor-id="influenza-mortality">Influenza mortality</h2>
+<p>Next, we look the percentage of deaths attributed to Influenza and Pneumonia in the past 8 years:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>ILI <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"CDC.csv"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">clean_names</span>() <span class="sc">|&gt;</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">date =</span> year <span class="sc">+</span> week<span class="sc">/</span><span class="dv">52</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 403 Columns: 8
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+dbl (8): Year, Week, Percent of Deaths Due to Pneumonia and Influenza, Expec...
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+</div>
+<section id="glimpse-the-data" class="level3">
+<h3 class="anchored" data-anchor-id="glimpse-the-data">Glimpse the data</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>ILI <span class="sc">|&gt;</span> <span class="fu">glimpse</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 403
+Columns: 9
+$ year                                             &lt;dbl&gt; 2012, 2012, 2012, 201…
+$ week                                             &lt;dbl&gt; 1, 2, 3, 4, 5, 6, 7, …
+$ percent_of_deaths_due_to_pneumonia_and_influenza &lt;dbl&gt; 8.479120, 8.343472, 8…
+$ expected                                         &lt;dbl&gt; 8.15718, 8.22181, 8.2…
+$ threshold                                        &lt;dbl&gt; 8.49104, 8.55556, 8.6…
+$ all_deaths                                       &lt;dbl&gt; 51102, 50962, 51010, …
+$ pneumonia_deaths                                 &lt;dbl&gt; 4323, 4245, 4261, 422…
+$ influenza_deaths                                 &lt;dbl&gt; 10, 7, 9, 11, 9, 19, …
+$ date                                             &lt;dbl&gt; 2012.019, 2012.038, 2…</code></pre>
+</div>
+</div>
+</section>
+<section id="plot-influenza-mortality-as-a-time-series" class="level3">
+<h3 class="anchored" data-anchor-id="plot-influenza-mortality-as-a-time-series">Plot Influenza mortality as a time series</h3>
+<p>The seasonal behavior in unmistakable. The purple curve illustrates the expected seasonal behavior, while the green curve displays the threshold above which we are facing an epidemic:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>ILI <span class="sc">|&gt;</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(date, percent_of_deaths_due_to_pneumonia_and_influenza, expected, threshold) <span class="sc">|&gt;</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="sc">!</span>date, <span class="at">names_to =</span> <span class="st">"series"</span>, <span class="at">values_to =</span> <span class="st">"values"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">series =</span> <span class="fu">fct_relevel</span>(series, <span class="st">"percent_of_deaths_due_to_pneumonia_and_influenza"</span>,</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>                              <span class="st">"expected"</span>, <span class="st">"threshold"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> values, <span class="at">color =</span> series)) <span class="sc">+</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span> </span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"% Mortality"</span>, <span class="st">"Expected"</span>, <span class="st">"Threshold"</span>),</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>                       <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"#378DBD"</span>, <span class="st">"#E69F00"</span>, <span class="st">"#009E73"</span>)) <span class="sc">+</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Date"</span>, <span class="at">y =</span> <span class="st">"% Mortality"</span>) <span class="sc">+</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"top"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+ℹ Please use `linewidth` instead.</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="dataExploration_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="sun-activity" class="level2">
+<h2 class="anchored" data-anchor-id="sun-activity">Sun activity</h2>
+<p>The number of observed sun spots over 300 years also display a nice seasonal behavior over the course of a decade or so:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>Sun <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"sun.csv"</span>)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 309 Columns: 2
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+dbl (2): YEAR, SUNACTIVITY
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+</div>
+<section id="glimpse-the-data-1" class="level3">
+<h3 class="anchored" data-anchor-id="glimpse-the-data-1">Glimpse the data</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>Sun <span class="sc">|&gt;</span> <span class="fu">glimpse</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 309
+Columns: 2
+$ YEAR        &lt;dbl&gt; 1700, 1701, 1702, 1703, 1704, 1705, 1706, 1707, 1708, 1709…
+$ SUNACTIVITY &lt;dbl&gt; 5, 11, 16, 23, 36, 58, 29, 20, 10, 8, 3, 0, 0, 2, 11, 27, …</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>Sun <span class="sc">|&gt;</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> YEAR, <span class="at">y =</span> SUNACTIVITY)) <span class="sc">+</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">size =</span> <span class="dv">1</span>, <span class="at">color =</span> <span class="st">"#378DBD"</span>) <span class="sc">+</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Year"</span>, <span class="at">y =</span> <span class="st">"Sun spot activity"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="dataExploration_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="dow-jones-industrial-average" class="level2">
+<h2 class="anchored" data-anchor-id="dow-jones-industrial-average">Dow-Jones Industrial Average</h2>
+<p>The Dow-Jones Industrial Average also has a clear uptrend like GDP but with significantly larger fluctuations:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>DJIA <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"DJIA.csv"</span>), <span class="at">na.strings =</span> <span class="st">"."</span>) <span class="sc">|&gt;</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">DATE =</span> <span class="fu">as_date</span>(DATE))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="glimpse-the-data-2" class="level3">
+<h3 class="anchored" data-anchor-id="glimpse-the-data-2">Glimpse the data</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>DJIA <span class="sc">|&gt;</span> <span class="fu">glimpse</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 2,609
+Columns: 2
+$ DATE &lt;date&gt; 2009-10-12, 2009-10-13, 2009-10-14, 2009-10-15, 2009-10-16, 2009…
+$ DJIA &lt;dbl&gt; 9885.80, 9871.06, 10015.86, 10062.94, 9995.91, 10092.19, 10041.48…</code></pre>
+</div>
+</div>
+</section>
+<section id="diagnose-the-data" class="level3">
+<h3 class="anchored" data-anchor-id="diagnose-the-data">Diagnose the data</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>DJIA <span class="sc">|&gt;</span> <span class="fu">diagnose</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 6
+  variables types   missing_count missing_percent unique_count unique_rate
+  &lt;chr&gt;     &lt;chr&gt;           &lt;int&gt;           &lt;dbl&gt;        &lt;int&gt;       &lt;dbl&gt;
+1 DATE      Date                0            0            2609       1    
+2 DJIA      numeric            94            3.60         2506       0.961</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>DJIA <span class="sc">|&gt;</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">between</span>(DATE, <span class="fu">as.Date</span>(<span class="st">"2016-12-31"</span>), <span class="fu">as.Date</span>(<span class="st">"2019-01-01"</span>))) <span class="sc">|&gt;</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> DATE, <span class="at">y =</span> DJIA)) <span class="sc">+</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">size =</span> <span class="dv">1</span>, <span class="at">color =</span> <span class="st">"#378DBD"</span>) <span class="sc">+</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Date"</span>, <span class="at">y =</span> <span class="st">"DIJA"</span>) <span class="sc">+</span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_date</span>(</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">date_breaks =</span> <span class="st">"4 months"</span>,</span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Jan</span><span class="sc">\n</span><span class="st">2017"</span>, <span class="st">"Apr"</span>, <span class="st">"Jul"</span>, <span class="st">"Oct"</span>, <span class="st">"Jan</span><span class="sc">\n</span><span class="st">2018"</span>, <span class="st">"Apr"</span>, <span class="st">"Jul"</span>, <span class="st">"Oct"</span>)</span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">as.Date</span>(<span class="fu">c</span>(<span class="st">"2016-12-31"</span>, <span class="st">"2019-01-01"</span>))) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="dataExploration_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="airline-passengers" class="level2">
+<h2 class="anchored" data-anchor-id="airline-passengers">Airline Passengers</h2>
+<p>The number of passenters in international flights in the 50s displays both a trend and a seasonal pattern</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>airline <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"international-airline-passengers.csv"</span>), <span class="at">sep =</span> <span class="st">";"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Month =</span> <span class="fu">paste0</span>(Month, <span class="st">"-01"</span>),</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">Month =</span> <span class="fu">as_date</span>(Month))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>airline <span class="sc">|&gt;</span> <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       Month Passengers
+1 1949-01-01        112
+2 1949-02-01        118
+3 1949-03-01        132
+4 1949-04-01        129
+5 1949-05-01        121
+6 1949-06-01        135</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>airline <span class="sc">|&gt;</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Month, <span class="at">y =</span> Passengers)) <span class="sc">+</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">size =</span> <span class="dv">1</span>, <span class="at">color =</span> <span class="st">"#378DBD"</span>) <span class="sc">+</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Date"</span>, <span class="at">y =</span> <span class="st">"DIJA"</span>) <span class="sc">+</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_date</span>(<span class="at">date_breaks =</span> <span class="st">"2 years"</span>, </span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>               <span class="at">date_labels =</span> <span class="st">"%Y"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="dataExploration_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="types-of-non-stationarity" class="level2">
+<h2 class="anchored" data-anchor-id="types-of-non-stationarity">Types of non-stationarity</h2>
+<p>There are several kinds of non-stationarity. Here we illustrate the most common ones with simple toy examples:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create data</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">10</span><span class="sc">*</span>pi, <span class="at">length.out =</span> <span class="dv">360</span>)</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">sin</span>(x)</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> x,</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">stationary =</span> y,</span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">changing_mean =</span> y <span class="sc">+</span> x<span class="sc">/</span><span class="dv">10</span>,</span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">changing_variance =</span> y <span class="sc">*</span> x<span class="sc">/</span><span class="dv">10</span>,</span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">changing_covariance =</span> <span class="fu">sin</span>(x <span class="sc">+</span> x<span class="sc">^</span><span class="dv">2</span><span class="sc">/</span><span class="dv">30</span>)</span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot</span></span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>plots <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> stationary)) <span class="sc">+</span></span>
+<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_line</span>(<span class="at">size =</span> <span class="dv">1</span>, <span class="at">color =</span> <span class="st">"#378DBD"</span>) <span class="sc">+</span></span>
+<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Stationary series"</span>, <span class="at">x =</span> <span class="st">"time"</span>, <span class="at">y =</span> <span class="st">"Amplitude"</span>),</span>
+<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> changing_mean)) <span class="sc">+</span></span>
+<span id="cb32-19"><a href="#cb32-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_line</span>(<span class="at">size =</span> <span class="dv">1</span>, <span class="at">color =</span> <span class="st">"#378DBD"</span>) <span class="sc">+</span></span>
+<span id="cb32-20"><a href="#cb32-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Changing mean"</span>, <span class="at">x =</span> <span class="st">"time"</span>, <span class="at">y =</span> <span class="st">"Amplitude"</span>),</span>
+<span id="cb32-21"><a href="#cb32-21" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb32-22"><a href="#cb32-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> changing_variance)) <span class="sc">+</span></span>
+<span id="cb32-23"><a href="#cb32-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_line</span>(<span class="at">size =</span> <span class="dv">1</span>, <span class="at">color =</span> <span class="st">"#378DBD"</span>) <span class="sc">+</span></span>
+<span id="cb32-24"><a href="#cb32-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Changing Variance"</span>, <span class="at">x =</span> <span class="st">"time"</span>, <span class="at">y =</span> <span class="st">"Amplitude"</span>),</span>
+<span id="cb32-25"><a href="#cb32-25" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb32-26"><a href="#cb32-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> changing_covariance)) <span class="sc">+</span></span>
+<span id="cb32-27"><a href="#cb32-27" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_line</span>(<span class="at">size =</span> <span class="dv">1</span>, <span class="at">color =</span> <span class="st">"#378DBD"</span>) <span class="sc">+</span></span>
+<span id="cb32-28"><a href="#cb32-28" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Changing Co-variance"</span>, <span class="at">x =</span> <span class="st">"time"</span>, <span class="at">y =</span> <span class="st">"Amplitude"</span>)</span>
+<span id="cb32-29"><a href="#cb32-29" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb32-30"><a href="#cb32-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-31"><a href="#cb32-31" aria-hidden="true" tabindex="-1"></a><span class="co"># Arrange the plots in a grid</span></span>
+<span id="cb32-32"><a href="#cb32-32" aria-hidden="true" tabindex="-1"></a>gridExtra<span class="sc">::</span><span class="fu">grid.arrange</span>(plots[[<span class="dv">1</span>]], plots[[<span class="dv">2</span>]], plots[[<span class="dv">3</span>]], plots[[<span class="dv">4</span>]], <span class="at">ncol =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="dataExploration_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="kinds-of-trend" class="level2">
+<h2 class="anchored" data-anchor-id="kinds-of-trend">Kinds of trend</h2>
+<p>Two of the most common non-stationarity types are due to differnet kinds of trends that we illustrate here:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create data</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">10</span><span class="sc">*</span>pi, <span class="at">length.out =</span> <span class="dv">360</span>)</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">sin</span>(x)</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> x,</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">additive_trend =</span> y <span class="sc">+</span> x<span class="sc">/</span><span class="dv">10</span>,</span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">multiplicative_trend =</span> y <span class="sc">*</span> x<span class="sc">/</span><span class="dv">10</span></span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Additive Trend Plot</span></span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>additive_plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> additive_trend)) <span class="sc">+</span></span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">size =</span> <span class="dv">1</span>, <span class="at">color =</span> <span class="st">"#378DBD"</span>) <span class="sc">+</span></span>
+<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Additive Trend"</span>, <span class="at">x =</span> <span class="st">"time"</span>, <span class="at">y =</span> <span class="st">"Amplitude"</span>) </span>
+<span id="cb33-14"><a href="#cb33-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-15"><a href="#cb33-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Multiplicative Trend Plot</span></span>
+<span id="cb33-16"><a href="#cb33-16" aria-hidden="true" tabindex="-1"></a>multiplicative_plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> multiplicative_trend)) <span class="sc">+</span></span>
+<span id="cb33-17"><a href="#cb33-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">size =</span> <span class="dv">1</span>, <span class="at">color =</span> <span class="st">"#378DBD"</span>) <span class="sc">+</span></span>
+<span id="cb33-18"><a href="#cb33-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Multiplicative Trend"</span>, <span class="at">x =</span> <span class="st">"time"</span>, <span class="at">y =</span> <span class="st">"Amplitude"</span>) </span>
+<span id="cb33-19"><a href="#cb33-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-20"><a href="#cb33-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Arrange the plots side by side</span></span>
+<span id="cb33-21"><a href="#cb33-21" aria-hidden="true" tabindex="-1"></a>gridExtra<span class="sc">::</span><span class="fu">grid.arrange</span>(additive_plot, multiplicative_plot, <span class="at">ncol =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="dataExploration_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
